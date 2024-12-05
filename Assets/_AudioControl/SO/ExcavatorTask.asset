@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 199751433d9e50040b5dcae20f84247a, type: 3}
+  m_Name: ExcavatorTask
+  m_EditorClassIdentifier: 
+  _tasks:
+  - Id: 0
+    Name: Task1-A
+    IsEnviromentQuiet: 1
+    IsExcavatorQuiet: 1
+    Description: 0
+  - Id: 0
+    Name: Task2-B
+    IsEnviromentQuiet: 0
+    IsExcavatorQuiet: 0
+    Description: 2
+  - Id: 0
+    Name: Task1-B
+    IsEnviromentQuiet: 0
+    IsExcavatorQuiet: 0
+    Description: 0
+  - Id: 0
+    Name: Task2-A
+    IsEnviromentQuiet: 1
+    IsExcavatorQuiet: 1
+    Description: 2
+  - Id: 0
+    Name: Task3-A
+    IsEnviromentQuiet: 1
+    IsExcavatorQuiet: 1
+    Description: 4
+  - Id: 0
+    Name: Task4-A
+    IsEnviromentQuiet: 1
+    IsExcavatorQuiet: 1
+    Description: 1
+  - Id: 0
+    Name: Task3-B
+    IsEnviromentQuiet: 0
+    IsExcavatorQuiet: 0
+    Description: 5
+  - Id: 0
+    Name: Task4-B
+    IsEnviromentQuiet: 0
+    IsExcavatorQuiet: 0
+    Description: 3
+  - Id: 0
+    Name: Finish
+    IsEnviromentQuiet: 0
+    IsExcavatorQuiet: 0
+    Description: 6
+  _soundSO: {fileID: 11400000, guid: f7d8225c3a4f0f54c89211f0afddae7a, type: 2}
+  _goForwardSprite: {fileID: 21300000, guid: 301fe569da9047c4988d46c1707ea4e5, type: 3}
+  _turnLeftSprite: {fileID: 21300000, guid: 0908671c4d9d28e4890451f605e68243, type: 3}
+  _turnRightSprite: {fileID: 21300000, guid: 45de8653136b13c4a9ecd7a7de0558f4, type: 3}
+  _turnBackSprite: {fileID: 21300000, guid: 4e424f4b39c7f494faefd764418e86a3, type: 3}
+  _loadingSprite: {fileID: 21300000, guid: e9923c6d5bf099243b4b1ce45e68853a, type: 3}
+  _unLoadingSprite: {fileID: 21300000, guid: 7edd250b04abcb14599c39485d6a4e0c, type: 3}
