@@ -74,7 +74,6 @@ public class ExcavatorScript : MonoBehaviour
 
         _wheelsBack[0] = WheelBackLeft;
         _wheelsBack[1] = WheelBackRight;
-        anim.updateMode = AnimatorUpdateMode.AnimatePhysics;
 
         _rigidbody = GetComponent<Rigidbody>();
         _maxSpeedBatch = _speedController.MaxSpeedLevel;
@@ -371,23 +370,22 @@ public class ExcavatorScript : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.DownArrow))
             {
-                RotateTread(Tread.RIGHT, Clockwise.CLOCKWISE, _driveSpeed);
+                //RotateTread(Tread.RIGHT, Clockwise.CLOCKWISE, _driveSpeed);
                 offsetR = Time.time * -scrollSpeed % 1;
-                RotateTread(Tread.LEFT, Clockwise.COUNTER_CLOCKWISE, _driveSpeed);
+                //RotateTread(Tread.LEFT, Clockwise.COUNTER_CLOCKWISE, _driveSpeed);
                 offsetL = Time.time * -scrollSpeed % 1;
-                _rigidbody.velocity = _driveSpeed * Time.deltaTime * transform.forward;
+                _rigidbody.velocity = _driveSpeed  * Vector3.forward;
                 _rigidbody.angularVelocity = Vector3.zero;
-
 
             }
             else if (Input.GetKey(KeyCode.UpArrow))
             {
-                RotateTread(Tread.RIGHT, Clockwise.COUNTER_CLOCKWISE, _driveSpeed);
+                //RotateTread(Tread.RIGHT, Clockwise.COUNTER_CLOCKWISE, _driveSpeed);
                 offsetR = Time.time * scrollSpeed % 1;
 
-                RotateTread(Tread.LEFT, Clockwise.CLOCKWISE, _driveSpeed);
+                //RotateTread(Tread.LEFT, Clockwise.CLOCKWISE, _driveSpeed);
                 offsetL = Time.time * scrollSpeed % 1;
-                _rigidbody.velocity = _driveSpeed * Time.deltaTime * -transform.forward;
+                _rigidbody.velocity = _driveSpeed * -Vector3.forward;
 
                 _rigidbody.angularVelocity = Vector3.zero;
             }
@@ -401,20 +399,20 @@ public class ExcavatorScript : MonoBehaviour
 
     private void RotateTread(Tread tread, Clockwise clockwise, float speed)
     {
-        //transform.RotateAround(_treadPositions[((int)tread + 1) % 2], Vector3.up * (int)clockwise, Time.deltaTime * speed);
-        Vector3 rotationAxis = Vector3.up * (int)clockwise;
+        // Define the pivot point and rotation axis
         Vector3 pivotPoint = _treadPositions[((int)tread + 1) % 2];
-        float angularSpeed = speed * Mathf.Deg2Rad;
-        Vector3 angularVelocity = rotationAxis * angularSpeed * 1.2f;
+        Vector3 rotationAxis = Vector3.up; // Rotate around the Y-axis
 
-        _rigidbody.angularVelocity = angularVelocity;
+        // Calculate the rotation for this frame
+        float angle = speed * Time.fixedDeltaTime * (int)clockwise; // Degrees to rotate this frame
+        Quaternion rotation = Quaternion.AngleAxis(angle, rotationAxis); // Rotation quaternion
 
-        Vector3 radius = transform.position - pivotPoint;
-        Vector3 tangentialVelocity = Vector3.Cross(angularVelocity, radius);
+        // Calculate the object's new position around the pivot
+        Vector3 directionToPivot = transform.position - pivotPoint; // Direction from the pivot to the object
+        Vector3 newPosition = pivotPoint + rotation * directionToPivot;
 
-        _rigidbody.velocity = tangentialVelocity;
-        _wheelsFront[(int)tread].transform.Rotate(-(int)clockwise * 4 * speed * Time.deltaTime * Vector3.forward);
-        _wheelsBack[(int)tread].transform.Rotate(-(int)clockwise * 4 * speed * Time.deltaTime * Vector3.forward);
+        _rigidbody.MovePosition(newPosition);
+        _rigidbody.MoveRotation(rotation * transform.rotation);
     }
 
     private void RotateBody()
@@ -486,4 +484,6 @@ public class ExcavatorScript : MonoBehaviour
             anim.SetFloat("BigArmSpeed", 0);
         }
     }
+
+
 }
