@@ -374,7 +374,7 @@ public class ExcavatorScript : MonoBehaviour
                 offsetR = Time.time * -scrollSpeed % 1;
                 //RotateTread(Tread.LEFT, Clockwise.COUNTER_CLOCKWISE, _driveSpeed);
                 offsetL = Time.time * -scrollSpeed % 1;
-                _rigidbody.velocity = _driveSpeed  * Vector3.forward;
+                _rigidbody.velocity = _driveSpeed  * transform.forward;
                 _rigidbody.angularVelocity = Vector3.zero;
 
             }
@@ -385,7 +385,7 @@ public class ExcavatorScript : MonoBehaviour
 
                 //RotateTread(Tread.LEFT, Clockwise.CLOCKWISE, _driveSpeed);
                 offsetL = Time.time * scrollSpeed % 1;
-                _rigidbody.velocity = _driveSpeed * -Vector3.forward;
+                _rigidbody.velocity = _driveSpeed * -transform.forward;
 
                 _rigidbody.angularVelocity = Vector3.zero;
             }

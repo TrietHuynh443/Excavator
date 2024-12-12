@@ -8,70 +8,87 @@ public class ObjectSnappingController : MonoBehaviour
 {
     private Rigidbody _rigidbody;
     private int _index;
+    private Transform _parent;
+    private GameObject _shovel;
     private GameObject _snappingObject;
+    [SerializeField] private GameObject _colliderHoldObject;
+    [SerializeField] private float _tweenDuration = 0.55f;
+    [SerializeField] private Ease _moveEase = Ease.Linear;
+    [SerializeField] private Ease _rotateEase = Ease.Linear;
+    private bool _isSnapping;
 
+    private void Awake()
+    {
+
+        DOTween.SetTweensCapacity(500, 200);
+
+    }
     private void OnEnable()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _index = int.Parse(gameObject.name);
-    }
-    private void OnCollisionStay(Collision other)
-    {
-        if (other.gameObject.tag == "Shovel")
-        {
-            Debug.Log($"{other.gameObject.name}");
-
-            var shovel = other.gameObject.GetComponent<ShovelController>();
-            if (_snappingObject != null)
-            {
-                _snappingObject = shovel.GetSnappingObject(_index);
-                StartCoroutine(Snapping(shovel.gameObject, _snappingObject));
-
-            }
-        }
+        _parent = transform.parent;
     }
 
-
-    private IEnumerator Snapping(GameObject shovel, GameObject snappingObject)
+    public void Snapping(GameObject shovel, GameObject snappingObject)
     {
+        _shovel = shovel;
+        _snappingObject = snappingObject;
+        _isSnapping = true;
+    }
+
+    private IEnumerator DoSnap(GameObject shovel, GameObject snappingObject)
+    {
+        _snappingObject = snappingObject;
         var pos = _snappingObject.transform.position;
         var rot = _snappingObject.transform.rotation;
-        var rollSequence = MakeRollToPositionAndRotation(snappingObject.transform, pos, rot.eulerAngles, 0.1f);
-        _rigidbody.useGravity = false;
-        _rigidbody.isKinematic = true;
-        // Optionally, add a callback when animation completes
-        rollSequence.OnComplete(() =>
-        {
-            transform.SetParent(shovel.transform);
-        });
+        var rollSequence = MakeRollToPositionAndRotation(pos, _tweenDuration);
+        Tween rotateTween = transform.DORotate(rot.eulerAngles, _tweenDuration + 0.15f, RotateMode.Fast).SetEase(_rotateEase);
+
+        rotateTween.OnComplete(() => rotateTween.Kill());
+        rollSequence.Join(rotateTween);
         rollSequence.Play();
-        while(!rollSequence.IsComplete())
+
+        while (Vector3.Distance(_rigidbody.transform.position, snappingObject.transform.position) > 0.003f)
         {
-            if (!(Vector3.Distance(transform.position, _snappingObject.transform.position) > 5f))
+            if (rollSequence.IsPlaying())
             {
                 yield return null;
             }
-            else
-            {
-                rollSequence.Kill();
-                _rigidbody.useGravity = true;
-                _rigidbody.isKinematic = false;
-                break;
-            }
+            pos = _snappingObject.transform.position;
+            rollSequence = MakeRollToPositionAndRotation(pos, _tweenDuration);
+            rollSequence.Play();
         }
+        transform.SetParent(shovel.transform);
+        _rigidbody.useGravity = false;
+        _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        _isSnapping = false;
     }
 
-    private Sequence MakeRollToPositionAndRotation(Transform target, Vector3 targetPosition, Vector3 targetRotation, float duration)
+    private Sequence MakeRollToPositionAndRotation(Vector3 targetPosition, float duration)
     {
-        // Create a sequence to chain position and rotation animations
         Sequence rollSequence = DOTween.Sequence();
 
-        // Add position animation
-        rollSequence.Append(target.DOMove(targetPosition, duration).SetEase(Ease.InOutQuad));
+        Tween moveTween = _rigidbody.transform.DOMove(targetPosition, duration).SetEase(_moveEase);
+        rollSequence.Append(moveTween);
 
-        // Add rotation animation (Euler angles)
-        rollSequence.Join(target.DORotate(targetRotation, duration, RotateMode.FastBeyond360).SetEase(Ease.InOutQuad));
 
         return rollSequence;
     }
+
+    public void ResetRigidBody()
+    {
+        transform.SetParent(_parent);
+        _rigidbody.useGravity = true;
+        _rigidbody.constraints = RigidbodyConstraints.None;
+    }
+
+    private void FixedUpdate()
+    {
+        if (_isSnapping)
+        {
+            StartCoroutine(DoSnap(_shovel, _snappingObject));
+        }
+    }
 }
+
