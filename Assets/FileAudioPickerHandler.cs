@@ -13,17 +13,19 @@ public class FileAudioPickerHandler : MonoBehaviour
     private Button pickFileButton;
     [SerializeField] TextMeshProUGUI _fileExcavatorSoundName;
     [SerializeField] TextMeshProUGUI _fileEnviromentSoundName;
+    private const string ExcavatorDefault = "Excavator Default";
+    private const string EnviromentDefault = "Enviroment Default";
 
     private void Start()
     {
         string path = PlayerPrefs.GetString($"Audio {_audioName}");
         if (_audioName.ToLower() == "excavator")
         {
-            _fileExcavatorSoundName.text = string.IsNullOrEmpty(path) ? "Excavator Default" : Path.GetFileName(path);
+            _fileExcavatorSoundName.text = string.IsNullOrEmpty(path) ? ExcavatorDefault : Path.GetFileName(path);
         }
         else if (_audioName.ToLower() == "enviroment")
         {
-            _fileEnviromentSoundName.text = string.IsNullOrEmpty(path) ? "Enviroment Default" : Path.GetFileName(path);
+            _fileEnviromentSoundName.text = string.IsNullOrEmpty(path) ? EnviromentDefault : Path.GetFileName(path);
         }
         InitFileBrowser();
     }
@@ -57,7 +59,6 @@ public class FileAudioPickerHandler : MonoBehaviour
     {
         Debug.Log(string.Join("", paths));
         StartCoroutine(LoadAndPlayAudio(paths[0]));
-
     }
 
 
@@ -84,11 +85,11 @@ public class FileAudioPickerHandler : MonoBehaviour
                 PlayerPrefs.SetString($"Audio {_audioName}", path);
                 if (_audioName.ToLower() == "excavator")
                 {
-                    _fileExcavatorSoundName.text = string.IsNullOrEmpty(path) ? "Excavator Default" : Path.GetFileName(path);
+                    _fileExcavatorSoundName.text = string.IsNullOrEmpty(path) ? ExcavatorDefault : Path.GetFileName(path);
                 }
                 else if (_audioName.ToLower() == "enviroment")
                 {
-                    _fileEnviromentSoundName.text = string.IsNullOrEmpty(path) ? "Enviroment Default" : Path.GetFileName(path);
+                    _fileEnviromentSoundName.text = string.IsNullOrEmpty(path) ? EnviromentDefault : Path.GetFileName(path);
                 }
             }
         }
