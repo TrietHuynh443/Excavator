@@ -52,10 +52,16 @@ public class ShovelController : MonoBehaviour
         var check = _checkSnapObjectDic.TryGetValue(other.gameObject, out bool isAttach);
         if (other.gameObject.CompareTag("Obstacle") || check)
         {
-            _checkSnapObjectDic[other.gameObject] = false;
-            --_objectSnappingCount;
-
+            StartCoroutine(UpdateSnappingDic(other.gameObject));
+           
         }
+    }
+
+    private IEnumerator UpdateSnappingDic(GameObject other)
+    {
+        yield return new WaitForEndOfFrame();
+        _checkSnapObjectDic[other] = false;
+        --_objectSnappingCount;
     }
 
     private void Update()

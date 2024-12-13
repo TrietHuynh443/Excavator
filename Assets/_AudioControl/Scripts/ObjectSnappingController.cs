@@ -39,16 +39,17 @@ public class ObjectSnappingController : MonoBehaviour
 
     private IEnumerator DoSnap(GameObject shovel, GameObject snappingObject)
     {
+        _isSnapping = false;
+        _rigidbody.excludeLayers = LayerMask.GetMask("Rocks"); 
         _snappingObject = snappingObject;
         var pos = _snappingObject.transform.position;
         var rot = _snappingObject.transform.rotation;
         var rollSequence = MakeRollToPositionAndRotation(pos, _tweenDuration);
-        Tween rotateTween = transform.DORotate(rot.eulerAngles, _tweenDuration + 0.15f, RotateMode.Fast).SetEase(_rotateEase);
+        Tween rotateTween = _rigidbody.transform.DORotate(rot.eulerAngles, 0.15f, RotateMode.Fast).SetEase(_rotateEase);
 
         rotateTween.OnComplete(() => rotateTween.Kill());
         rollSequence.Join(rotateTween);
         rollSequence.Play();
-
         while (Vector3.Distance(_rigidbody.transform.position, snappingObject.transform.position) > 0.003f)
         {
             if (rollSequence.IsPlaying())
@@ -56,21 +57,27 @@ public class ObjectSnappingController : MonoBehaviour
                 yield return null;
             }
             pos = _snappingObject.transform.position;
-            rollSequence = MakeRollToPositionAndRotation(pos, _tweenDuration);
+            rollSequence = MakeRollToPositionAndRotation(pos, 0.05f);
             rollSequence.Play();
         }
+        
+        yield return new WaitForEndOfFrame();
+
+        
         transform.SetParent(shovel.transform);
         _rigidbody.useGravity = false;
         _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-        _isSnapping = false;
+
+
     }
 
     private Sequence MakeRollToPositionAndRotation(Vector3 targetPosition, float duration)
     {
         Sequence rollSequence = DOTween.Sequence();
 
-        Tween moveTween = _rigidbody.transform.DOMove(targetPosition, duration).SetEase(_moveEase);
+        Tween moveTween = transform.DOMove(targetPosition, duration).SetEase(_moveEase);
         rollSequence.Append(moveTween);
+        _rigidbody.excludeLayers = LayerMask.GetMask("Rocks");
 
 
         return rollSequence;
@@ -81,6 +88,7 @@ public class ObjectSnappingController : MonoBehaviour
         transform.SetParent(_parent);
         _rigidbody.useGravity = true;
         _rigidbody.constraints = RigidbodyConstraints.None;
+        _rigidbody.excludeLayers = LayerMask.GetMask();
     }
 
     private void FixedUpdate()
