@@ -88,6 +88,7 @@ public class ObjectSnappingController : MonoBehaviour
         transform.SetParent(_parent);
         _rigidbody.useGravity = true;
         _rigidbody.constraints = RigidbodyConstraints.None;
+        _rigidbody.AddForce(Vector3.down, ForceMode.Impulse);
         _rigidbody.excludeLayers = LayerMask.GetMask();
     }
 
