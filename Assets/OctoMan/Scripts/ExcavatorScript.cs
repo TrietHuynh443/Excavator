@@ -221,10 +221,12 @@ public class ExcavatorScript : MonoBehaviour
         }
 
         ControlDoor();
-        rightArrow = Mathf.Abs(_body.localEulerAngles.z) <= 90 ? Input.GetKey(KeyCode.RightArrow) : Input.GetKey(KeyCode.LeftArrow);
-        leftArrow = Mathf.Abs(_body.localEulerAngles.z) <= 90 ? Input.GetKey(KeyCode.LeftArrow) : Input.GetKey(KeyCode.RightArrow);
-        upArrow = Mathf.Abs(_body.localEulerAngles.z) <= 90 ? Input.GetKey(KeyCode.UpArrow) : Input.GetKey(KeyCode.DownArrow);
-        downArrow = Mathf.Abs(_body.localEulerAngles.z) <= 90 ? Input.GetKey(KeyCode.DownArrow) : Input.GetKey(KeyCode.UpArrow);
+        float angle = (_body.localEulerAngles.z > 180) ? _body.localEulerAngles.z - 360 : _body.localEulerAngles.z;
+        rightArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.RightArrow) : Input.GetKey(KeyCode.LeftArrow);
+        leftArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.LeftArrow) : Input.GetKey(KeyCode.RightArrow);
+        upArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.UpArrow) : Input.GetKey(KeyCode.DownArrow);
+        downArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.DownArrow) : Input.GetKey(KeyCode.UpArrow);
+        
         //--------------------------------------------------------------Animate UV's---------------------------------------------------
     }
 
@@ -296,14 +298,14 @@ public class ExcavatorScript : MonoBehaviour
             MoveArm();
             ////----------------------------------------------------------SHOVEL-----------------------------------------------------------------
             ControlShovel();
-            ////---------------------------------------------------------ROTATE BODY----------------------------------------------------------
-            RotateBody();
             ////------------------------------------------------------DOOR OPEN / CLOSE-----------------------------------------------------
         }
         else
         {
             MovingControl();
         }
+        ////---------------------------------------------------------ROTATE BODY----------------------------------------------------------
+        RotateBody();
     }
     private void ControlSafetyBlockLever()
     {
