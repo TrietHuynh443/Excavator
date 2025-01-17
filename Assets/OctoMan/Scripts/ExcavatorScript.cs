@@ -15,7 +15,8 @@ public class ExcavatorScript : MonoBehaviour
     [SerializeField] private float _speedPerBatch = 5f;
 
     [SerializeField] private Transform _body;
-
+    
+    [SerializeField] private OnTaskTriggerSO _onTaskTriggerSO;
     private float _maxSpeed;
 
     private float _minSpeed;
@@ -58,6 +59,26 @@ public class ExcavatorScript : MonoBehaviour
     private Rigidbody _rigidbody;
 
     private int _maxSpeedBatch;
+
+    private void OnEnable()
+    {
+        _onTaskTriggerSO?.AddListener(ReverseInput);
+    }
+
+    private void OnDisable()
+    {
+        _onTaskTriggerSO?.RemoveListener(ReverseInput);
+    }
+
+    private void ReverseInput(TaskInfo info)
+    {
+        Debug.Log("ReverseInput called + " + info.Name);
+        if (string.Equals(info.Name, "Task4-A", StringComparison.CurrentCultureIgnoreCase))
+        {
+            _isReverse = true;
+        }
+    }
+
     void Start()
     {
         // Materials for the Treads
@@ -221,12 +242,24 @@ public class ExcavatorScript : MonoBehaviour
         }
 
         ControlDoor();
-        float angle = (_body.localEulerAngles.z > 180) ? _body.localEulerAngles.z - 360 : _body.localEulerAngles.z;
-        rightArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.RightArrow) : Input.GetKey(KeyCode.LeftArrow);
-        leftArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.LeftArrow) : Input.GetKey(KeyCode.RightArrow);
-        upArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.UpArrow) : Input.GetKey(KeyCode.DownArrow);
-        downArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.DownArrow) : Input.GetKey(KeyCode.UpArrow);
+        rightArrow = Input.GetKey(KeyCode.RightArrow);
+        leftArrow = Input.GetKey(KeyCode.LeftArrow);
+        upArrow = Input.GetKey(KeyCode.UpArrow);
+        downArrow = Input.GetKey(KeyCode.DownArrow);
+        if (_isReverse)
+        {
+            // float angle = (_body.localEulerAngles.z > 180) ? _body.localEulerAngles.z - 360 : _body.localEulerAngles.z;
+            // rightArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.RightArrow) : Input.GetKey(KeyCode.LeftArrow);
+            // leftArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.LeftArrow) : Input.GetKey(KeyCode.RightArrow);
+            // upArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.UpArrow) : Input.GetKey(KeyCode.DownArrow);
+            // downArrow = Mathf.Abs(angle) <= 90 ? Input.GetKey(KeyCode.DownArrow) : Input.GetKey(KeyCode.UpArrow);
+            rightArrow = Input.GetKey(KeyCode.LeftArrow);
+            leftArrow = Input.GetKey(KeyCode.RightArrow);
+            upArrow = Input.GetKey(KeyCode.DownArrow);
+            downArrow = Input.GetKey(KeyCode.UpArrow);
+        }
         
+
         //--------------------------------------------------------------Animate UV's---------------------------------------------------
     }
 
@@ -410,6 +443,7 @@ public class ExcavatorScript : MonoBehaviour
     private bool leftArrow = false;
     private bool upArrow = false;
     private bool downArrow = false;
+    private bool _isReverse = false;
 
     private void RotateTread(Tread tread, Clockwise clockwise, float speed)
     {
